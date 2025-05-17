@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biblioteca Digital</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      background-color: #333;
+      color: white;
+      padding: 1rem;
+    }
+    h2 {
+      margin-top: 40px;
+    }
+    .genero {
+      margin-bottom: 30px;
+    }
+    .libros {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      padding: 10px 0;
+      flex-wrap: nowrap;
+    }
+    .libro {
+      min-width: 120px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: white;
+      text-align: center;
+      padding: 8px;
+    }
+    .libro img {
+      width: 90px;
+      height: 120px;
+      object-fit: cover;
+    }
+    #toggleForm {
+      margin: 1rem auto;
+      display: block;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      z-index: 9;
+    }
+    .add-form {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      z-index: 10;
+      width: 90%;
+      max-width: 400px;
+    }
+    .add-form input,
+    .add-form select,
+    .add-form button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 8px;
+      font-size: 1rem;
+    }
+    .add-form button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Biblioteca Digital</h1>
+
+  <div id="contenedor-generos"></div>
+
+  <button id="toggleForm">➕ Añadir libro</button>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div class="add-form" id="formContainer">
+    <h2>Añadir nuevo libro</h2>
+    <form id="formulario">
+      <input type="text" id="nombre" placeholder="Nombre del libro" required />
+      <select id="genero">
+        <option value="Matemática">Matemática</option>
+        <option value="Lenguaje">Lenguaje</option>
+        <option value="Biología">Biología</option>
+        <option value="Inglés">Inglés</option>
+      </select>
+      <input type="file" id="portada" accept="image/jpeg" required />
+      <input type="file" id="archivo" accept="application/pdf" required />
+      <button type="submit">Añadir libro</button>
+    </form>
+  </div>
+
+  <script>
+    const generos = ["Matemática", "Lenguaje", "Biología", "Inglés"];
+    const contenedorGeneros = document.getElementById("contenedor-generos");
+    const bibliotecas = {};
+
+    generos.forEach(genero => {
+      const div = document.createElement("div");
+      div.className = "genero";
+      div.innerHTML = `<h2>${genero}</h2><div class="libros" id="${genero}"></div>`;
+      contenedorGeneros.appendChild(div);
+      bibliotecas[genero] = document.getElementById(genero);
+    });
+
+    const toggleFormBtn = document.getElementById("toggleForm");
+    const formContainer = document.getElementById("formContainer");
+    const overlay = document.getElementById("overlay");
+
+    toggleFormBtn.addEventListener("click", () => {
+      formContainer.style.display = "block";
+      overlay.style.display = "block";
+    });
+
+    overlay.addEventListener("click", () => {
+      formContainer.style.display = "none";
+      overlay.style.display = "none";
+    });
+
+    document.getElementById("formulario").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const nombre = document.getElementById("nombre").value;
+      const genero = document.getElementById("genero").value;
+      const portada = document.getElementById("portada").files[0];
+      const archivo = document.getElementById("archivo").files[0];
+
+      if (portada && archivo) {
+        const readerPortada = new FileReader();
+        readerPortada.onload = function(event) {
+          const portadaURL = event.target.result;
+
+          const readerArchivo = new FileReader();
+          readerArchivo.onload = function(e2) {
+            const archivoURL = e2.target.result;
+
+            const divLibro = document.createElement("div");
+            divLibro.className = "libro";
+            divLibro.innerHTML = `
+              <img src="${portadaURL}" alt="Portada">
+              <p>${nombre}</p>
+              <a href="${archivoURL}" download="${nombre}.pdf">Descargar</a>
+            `;
+            bibliotecas[genero].appendChild(divLibro);
+          };
+          readerArchivo.readAsDataURL(archivo);
+        };
+        readerPortada.readAsDataURL(portada);
+      }
+
+      formContainer.style.display = "none";
+      overlay.style.display = "none";
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biblioteca Digital</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #001f3f;
+      margin: 0;
+      padding: 20px;
+      color: white;
+    }
+    h1 {
+      text-align: center;
+      background-color: #003366;
+      color: white;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    h2 {
+      margin-top: 40px;
+      color: #00c0ff;
+    }
+    .genero {
+      margin-bottom: 30px;
+    }
+    .libros {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      padding: 10px 0;
+      flex-wrap: nowrap;
+    }
+    .libro {
+      min-width: 120px;
+      width: 120px;
+      height: 160px;
+      border-radius: 8px;
+      background: #004080;
+      text-align: center;
+      padding: 4px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .libro:hover {
+      transform: scale(1.05);
+    }
+    .libro img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+    .libro-info {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 8px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+    }
+    .libro:hover .libro-info {
+      display: block;
+    }
+    .libro-info h3 {
+      margin: 0;
+      font-size: 1rem;
+      color: #00c0ff;
+    }
+    .libro-info p {
+      margin: 0.5rem 0;
+    }
+    .libro-info a {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 6px;
+      background-color: #00c0ff;
+      color: black;
+      text-decoration: none;
+      border-radius: 4px;
+      text-align: center;
+    }
+    #toggleForm {
+      margin: 1rem auto;
+      display: block;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #00c0ff;
+      color: black;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      z-index: 9;
+    }
+    .add-form {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      color: black;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      z-index: 10;
+      width: 90%;
+      max-width: 400px;
+    }
+    .add-form input,
+    .add-form select,
+    .add-form textarea,
+    .add-form button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 8px;
+      font-size: 1rem;
+    }
+    .add-form button {
+      background-color: #003366;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Biblioteca Digital</h1>
+
+  <div id="contenedor-generos"></div>
+
+  <button id="toggleForm">➕ Añadir libro</button>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div class="add-form" id="formContainer">
+    <h2>Añadir nuevo libro</h2>
+    <form id="formulario">
+      <input type="text" id="nombre" placeholder="Nombre del libro" required />
+      <select id="genero">
+        <option value="Matemática">Matemática</option>
+        <option value="Lenguaje">Lenguaje</option>
+        <option value="Biología">Biología</option>
+        <option value="Inglés">Inglés</option>
+      </select>
+      <input type="text" id="nuevaCategoria" placeholder="Añadir categoría adicional (opcional)" />
+      <textarea id="descripcion" placeholder="Descripción del libro (opcional)"></textarea>
+      <input type="file" id="portada" accept="image/jpeg" required />
+      <input type="file" id="archivo" accept="application/pdf" required />
+      <button type="submit">Añadir libro</button>
+    </form>
+  </div>
+
+  <script>
+    let generos = ["Matemática", "Lenguaje", "Biología", "Inglés"];
+    const contenedorGeneros = document.getElementById("contenedor-generos");
+    const bibliotecas = {};
+
+    function renderGeneros() {
+      contenedorGeneros.innerHTML = "";
+      generos.forEach(genero => {
+        const div = document.createElement("div");
+        div.className = "genero";
+        div.innerHTML = `<h2>${genero}</h2><div class="libros" id="${genero}"></div>`;
+        contenedorGeneros.appendChild(div);
+        bibliotecas[genero] = document.getElementById(genero);
+      });
+    }
+
+    renderGeneros();
+
+    const toggleFormBtn = document.getElementById("toggleForm");
+    const formContainer = document.getElementById("formContainer");
+    const overlay = document.getElementById("overlay");
+
+    toggleFormBtn.addEventListener("click", () => {
+      formContainer.style.display = "block";
+      overlay.style.display = "block";
+    });
+
+    overlay.addEventListener("click", () => {
+      formContainer.style.display = "none";
+      overlay.style.display = "none";
+    });
+
+    document.getElementById("formulario").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const nombre = document.getElementById("nombre").value;
+      const genero = document.getElementById("genero").value;
+      const nuevaCategoria = document.getElementById("nuevaCategoria").value.trim();
+      const descripcion = document.getElementById("descripcion").value.trim();
+      const portada = document.getElementById("portada").files[0];
+      const archivo = document.getElementById("archivo").files[0];
+
+      const categoriaFinal = nuevaCategoria || genero;
+      if (!generos.includes(categoriaFinal)) {
+        generos.push(categoriaFinal);
+        renderGeneros();
+      }
+
+      if (portada && archivo) {
+        const readerPortada = new FileReader();
+        readerPortada.onload = function(event) {
+          const portadaURL = event.target.result;
+
+          const readerArchivo = new FileReader();
+          readerArchivo.onload = function(e2) {
+            const archivoURL = e2.target.result;
+
+            const divLibro = document.createElement("div");
+            divLibro.className = "libro";
+            divLibro.innerHTML = `
+              <img src="${portadaURL}" alt="Portada">
+              <div class="libro-info">
+                <h3>${nombre}</h3>
+                ${descripcion ? `<p>${descripcion}</p>` : ""}
+                <a href="${archivoURL}" download="${nombre}.pdf">Descargar</a>
+              </div>
+            `;
+            if (!bibliotecas[categoriaFinal]) {
+              const div = document.createElement("div");
+              div.className = "genero";
+              div.innerHTML = `<h2>${categoriaFinal}</h2><div class="libros" id="${categoriaFinal}"></div>`;
+              contenedorGeneros.appendChild(div);
+              bibliotecas[categoriaFinal] = document.getElementById(categoriaFinal);
+            }
+            bibliotecas[categoriaFinal].appendChild(divLibro);
+          };
+          readerArchivo.readAsDataURL(archivo);
+        };
+        readerPortada.readAsDataURL(portada);
+      }
+
+      formContainer.style.display = "none";
+      overlay.style.display = "none";
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
